@@ -1,0 +1,26 @@
+1. Proposed Tech Stack & Architecture
+
+Frontend
+  Mobile: Expo + React Native (TypeScript)
+    Easy over-the-air updates (Expo EAS)
+    Single codebase for iOS & Android
+  Web: React (TypeScript)
+    Share core UI components via a mono-repo (e.g. pnpm workspaces)
+Backend & Infra
+  API: Node.js + TypeScript serverless on AWS
+    AWS Lambda behind API Gateway (REST or GraphQL via AppSync)
+    AWS Cognito for user auth/social-login
+  Database:
+    Primary: PostgreSQL (Aurora Serverless v2) for relational data (tasks, bookings, reviews)
+    Realtime: DynamoDB + DynamoDB streams (or Firebase Realtime DB) to drive in-app chat and presence
+  Messaging/Chat: Stream Chat (hosted) or Firebase
+  Geolocation / Maps: Google Maps SDK (mobile + web) or Mapbox
+  Payments:
+    Stripe for credit-card (check regional availability in the Bahamas/Jamaica; if unsupported, fall back to PayPal)
+    PayPal for PayPal wallets
+  File storage: S3 for images (task photos, profiles)
+  CI/CD: GitHub Actions → deploy stacks via Amplify CLI or CDK
+  Monitoring: CloudWatch + X-Ray; Sentry for frontend errors
+
+
+Cost-effective POC: start with serverless + Aurora Serverless, scale to provisioned once you hit larger volumes.
