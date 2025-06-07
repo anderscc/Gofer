@@ -1,0 +1,19 @@
+{
+  "name": "gofer",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter @gofer/web dev",
+    "dev:mobile": "pnpm --filter @gofer/mobile start",
+    "build:web": "pnpm --filter @gofer/web build",
+    "build:mobile": "pnpm --filter @gofer/mobile build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.0"
+  }
+}
