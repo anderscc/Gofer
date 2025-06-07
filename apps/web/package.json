@@ -12,7 +12,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "next": "15.3.3",
-    "@gofer/ui": "workspace:*"
+    "@gofer/ui": "workspace:*",
+    "@gofer/auth": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5",

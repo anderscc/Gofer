@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@gofer/auth": "workspace:*",
     "@gofer/ui": "workspace:*",
     "@react-navigation/bottom-tabs": "^7.3.14",
     "@react-navigation/material-top-tabs": "^7.2.14",

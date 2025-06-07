@@ -13,6 +13,8 @@ export type RootStackParamList = {
   TaskDetails: { task: Task };
   CreateTask: undefined;
   Chat: { taskId: string; otherUserId: string };
+  SignIn: undefined;
+  SignUp: undefined;
 };
 
 declare global {

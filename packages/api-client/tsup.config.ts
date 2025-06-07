@@ -7,8 +7,5 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-native", "expo-image-picker"],
-  esbuildOptions(options) {
-    options.jsx = 'automatic';
-  },
+  external: ["react", "@aws-sdk/*", "axios"],
 });

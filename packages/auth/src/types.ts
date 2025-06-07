@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { User as GoogleUser } from '@react-native-google-signin/google-signin';
 
 export const SignUpSchema = z.object({
   email: z.string().email(),
@@ -38,6 +39,15 @@ export type SignInInput = z.infer<typeof SignInSchema>;
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 export type ConfirmResetPasswordInput = z.infer<typeof ConfirmResetPasswordSchema>;
 
+interface GoogleSignInUser {
+  id: string;
+  email: string;
+  name: string | null;
+  givenName: string | null;
+  familyName: string | null;
+  photo: string | null;
+}
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -46,4 +56,19 @@ export interface AuthUser {
   phoneNumber: string;
   emailVerified: boolean;
   phoneVerified: boolean;
+}
+
+export interface SocialAuthUser {
+  id: string;
+  email: string;
+  name: string | null;
+  givenName: string | null;
+  familyName: string | null;
+  photo: string | null;
+}
+
+export interface SocialAuthCredentials {
+  accessToken: string;
+  idToken?: string;
+  user: SocialAuthUser;
 }

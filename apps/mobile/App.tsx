@@ -5,12 +5,15 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { TaskCard, Task, TaskCategory, TaskStatus } from '@gofer/ui';
+import { AuthProvider, useAuth } from '@gofer/auth';
 import * as Location from 'expo-location';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { TaskDetailsScreen } from './src/screens/TaskDetailsScreen';
+import { SignInScreen } from './src/screens/SignInScreen';
+import { SignUpScreen } from './src/screens/SignUpScreen';
 import type { TabParamList, RootStackParamList } from './src/types/navigation';
 
 // Keep splash screen visible while we fetch resources
@@ -204,58 +207,51 @@ function ProfileScreen() {
   );
 }
 
-export default function App() {
-  const [appIsReady, setAppIsReady] = useState(false);
+function AppContent() {
+  const { user, isLoading } = useAuth();
 
-  useEffect(() => {
-    async function prepare() {
-      try {
-        // Load fonts
-        await Font.loadAsync({
-          ...Ionicons.font,
-        });
-        
-        // Simulate some async loading
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
-  if (!appIsReady) {
-    return null;
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
-    <NavigationContainer onReady={onLayoutRootView}>
-      <StatusBar style="auto" />
+    <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="MainTabs"
-          component={TabNavigator}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="TaskDetails"
-          component={TaskDetailsScreen}
-          options={{ 
-            title: 'Task Details',
-            headerBackTitle: 'Back',
-          }}
-        />
+        {user ? (
+          // Protected routes
+          <Stack.Group>
+            <Stack.Screen
+              name="MainTabs"
+              component={TabNavigator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="TaskDetails"
+              component={TaskDetailsScreen}
+              options={{ title: 'Task Details' }}
+            />
+          </Stack.Group>
+        ) : (
+          // Public routes
+          <Stack.Group screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+          </Stack.Group>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
@@ -279,5 +275,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     marginTop: 4,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

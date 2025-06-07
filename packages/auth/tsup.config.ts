@@ -7,7 +7,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-native", "expo-image-picker"],
+  external: ["react", "react-native", "@aws-sdk/*", "@react-native-async-storage/async-storage"],
   esbuildOptions(options) {
     options.jsx = 'automatic';
   },
