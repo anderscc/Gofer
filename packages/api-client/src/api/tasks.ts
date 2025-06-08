@@ -7,6 +7,7 @@ import {
   CreateTaskSchema,
   TaskBidSchema,
 } from '../types/task';
+import type { SearchParams, SearchResult } from '@gofer/search';
 
 export class TasksApi {
   private client: AxiosInstance;
@@ -66,5 +67,34 @@ export class TasksApi {
     });
 
     return imageUrl;
+  }
+
+  async searchTasks(params: SearchParams): Promise<SearchResult<Task>> {
+    const response = await this.client.get<SearchResult<Task>>('/tasks/search', { 
+      params: {
+        ...params,
+        fromDate: params.fromDate?.toISOString(),
+        toDate: params.toDate?.toISOString(),
+      } 
+    });
+    return response.data;
+  }
+
+  async suggestTasks(query: string): Promise<string[]> {
+    const response = await this.client.get<string[]>('/tasks/suggest', { 
+      params: { query } 
+    });
+    return response.data;
+  }
+
+  async searchNearby(latitude: number, longitude: number, radius: number = 20): Promise<SearchResult<Task>> {
+    return this.searchTasks({
+      location: {
+        lat: latitude,
+        lon: longitude,
+        radius
+      },
+      sortBy: 'distance'
+    });
   }
 }

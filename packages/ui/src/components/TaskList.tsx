@@ -1,15 +1,26 @@
-import { ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { ScrollView, StyleSheet, RefreshControl, ActivityIndicator, View, Text } from 'react-native';
 import { useState } from 'react';
 import { TaskCard } from './TaskCard';
 import type { Task } from '@gofer/api-client';
+import { theme } from '../theme';
 
-interface TaskListProps {
+export interface TaskListProps {
   tasks: Task[];
   onTaskPress?: (task: Task) => void;
   onRefresh?: () => Promise<void>;
+  onLoadMore?: () => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
-export function TaskList({ tasks, onTaskPress, onRefresh }: TaskListProps) {
+export function TaskList({ 
+  tasks, 
+  onTaskPress, 
+  onRefresh, 
+  onLoadMore,
+  isLoading,
+  error 
+}: TaskListProps) {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -18,6 +29,35 @@ export function TaskList({ tasks, onTaskPress, onRefresh }: TaskListProps) {
     await onRefresh();
     setRefreshing(false);
   };
+
+  const handleScroll = (event: any) => {
+    if (!onLoadMore) return;
+
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const paddingToBottom = 20;
+    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= 
+      contentSize.height - paddingToBottom;
+
+    if (isCloseToBottom && !isLoading) {
+      onLoadMore();
+    }
+  };
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (tasks.length === 0 && !isLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.emptyText}>No tasks found</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -31,6 +71,8 @@ export function TaskList({ tasks, onTaskPress, onRefresh }: TaskListProps) {
           />
         ) : undefined
       }
+      onScroll={handleScroll}
+      scrollEventThrottle={400}
     >
       {tasks.map((task) => (
         <TaskCard
@@ -39,6 +81,11 @@ export function TaskList({ tasks, onTaskPress, onRefresh }: TaskListProps) {
           onPress={() => onTaskPress?.(task)}
         />
       ))}
+      {isLoading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary[500]} />
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -48,6 +95,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    padding: theme.spacing.md,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing.xl,
+  },
+  errorText: {
+    color: theme.colors.error[500],
+    textAlign: 'center',
+    fontSize: theme.typography.fontSizes.md,
+  },
+  emptyText: {
+    color: theme.colors.neutral[500],
+    textAlign: 'center',
+    fontSize: theme.typography.fontSizes.md,
+  },
+  loaderContainer: {
+    padding: theme.spacing.lg,
   },
 });

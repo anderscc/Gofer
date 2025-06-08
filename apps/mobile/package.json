@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@gofer/api-client": "workspace:*",
     "@gofer/auth": "workspace:*",
+    "@gofer/search": "workspace:*",
     "@gofer/ui": "workspace:*",
     "@react-navigation/bottom-tabs": "^7.3.14",
     "@react-navigation/material-top-tabs": "^7.2.14",
@@ -23,6 +25,7 @@
     "expo-location": "^18.1.5",
     "expo-splash-screen": "^0.30.9",
     "expo-status-bar": "~2.2.3",
+    "lodash": "^4.17.21",
     "react": "19.0.0",
     "react-native": "0.79.3",
     "react-native-safe-area-context": "^5.4.1",
@@ -31,6 +34,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@types/lodash": "^4.14.195",
     "@types/react": "~19.0.10",
     "typescript": "~5.8.3"
   },
