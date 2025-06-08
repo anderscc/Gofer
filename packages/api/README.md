@@ -1,6 +1,122 @@
-# PayPal Integration Testing Guide
+# Gofer API Service
 
-This guide explains how to test the PayPal integration in sandbox mode.
+The backend API service for the Gofer platform.
+
+## Technology Stack
+
+- Node.js & Express
+- TypeScript
+- MongoDB
+- OpenSearch integration
+- AWS Lambda & API Gateway
+- Stripe & PayPal payment processing
+
+## Prerequisites
+
+- Node.js v18+
+- pnpm v8+
+- MongoDB running locally
+- OpenSearch running locally (or accessible instance)
+- AWS CLI configured (for deployment)
+
+## Configuration
+
+Copy `.env.template` to `.env` and configure the following variables:
+
+```bash
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+API_URL=http://localhost:3001
+
+# Database Configuration
+MONGODB_URI=mongodb://localhost:27017/gofer
+
+# Authentication
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=7d
+
+# Payment Processing
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+
+# AWS Configuration
+AWS_REGION=us-east-1
+AWS_PROFILE=default
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+
+# Search Service Integration
+SEARCH_SERVICE_URL=http://localhost:9200
+SEARCH_INDEX_PREFIX=local
+```
+
+## Development
+
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+2. Start development server:
+   ```bash
+   pnpm dev
+   ```
+
+3. Initialize search indices (first time only):
+   ```bash
+   pnpm initialize-search
+   ```
+
+## API Endpoints
+
+### Tasks
+- `GET /api/tasks` - List tasks
+- `POST /api/tasks` - Create task
+- `GET /api/tasks/:id` - Get task details
+- `PUT /api/tasks/:id` - Update task
+- `DELETE /api/tasks/:id` - Delete task
+
+### Bookings
+- `POST /api/bookings` - Create booking
+- `GET /api/bookings/:id` - Get booking details
+- `PUT /api/bookings/:id` - Update booking status
+
+### Payments
+- `POST /api/payments/create-intent` - Create payment intent
+- `POST /api/payments/webhook` - Payment webhook handler
+
+## Testing
+
+```bash
+pnpm test        # Run tests
+pnpm test:watch  # Run tests in watch mode
+pnpm lint        # Run linter
+```
+
+## Directory Structure
+
+- `src/`
+  - `functions/` - AWS Lambda functions
+  - `routes/` - API route handlers
+  - `services/` - Business logic
+  - `models/` - Database models
+  - `middleware/` - Express middleware
+  - `utils/` - Utility functions
+- `scripts/` - Utility scripts
+
+## Deployment
+
+1. Configure AWS credentials
+2. Update environment variables for target environment
+3. Deploy:
+   ```bash
+   pnpm deploy
+   ```
+
+## PayPal Integration Testing
 
 ## Prerequisites
 

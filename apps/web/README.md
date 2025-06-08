@@ -1,18 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gofer Web Application
 
-## Getting Started
+The web frontend for the Gofer platform built with Next.js and TypeScript.
 
-First, run the development server:
+## Technology Stack
+
+- Next.js 14+
+- TypeScript
+- Tailwind CSS
+- @gofer/ui (Shared UI components)
+- @gofer/auth (Authentication)
+- @gofer/api-client (API integration)
+
+## Prerequisites
+
+- Node.js v18+
+- pnpm v8+
+- API service running locally (for development)
+
+## Configuration
+
+Copy `.env.template` to `.env` and configure the following variables:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:3001
+
+# Authentication
+NEXT_PUBLIC_AUTH_DOMAIN=your-auth-domain
+NEXT_PUBLIC_AUTH_CLIENT_ID=your-auth-client-id
+
+# External Services
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+
+# Feature Flags
+NEXT_PUBLIC_ENABLE_MAPS=true
+NEXT_PUBLIC_ENABLE_PAYMENTS=true
 ```
+
+## Development
+
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+2. Start the development server:
+   ```bash
+   pnpm dev
+   ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
