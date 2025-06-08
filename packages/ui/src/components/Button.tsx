@@ -5,7 +5,7 @@ import { colors, typography, radii, spacing } from '../theme';
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
-export interface ButtonProps extends Omit<PressableProps, 'style'> {
+export interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   fullWidth?: boolean;
@@ -14,6 +14,8 @@ export interface ButtonProps extends Omit<PressableProps, 'style'> {
   isLoading?: boolean;
   disabled?: boolean;
   children: string;
+  style?: PressableProps['style'];
+  onPress?: () => void;
 }
 
 export function Button({

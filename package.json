@@ -6,6 +6,7 @@
     "dev:mobile": "pnpm validate-env && pnpm --filter @gofer/mobile start",
     "build:web": "pnpm validate-env && pnpm --filter @gofer/web build",
     "build:mobile": "pnpm validate-env && pnpm --filter @gofer/mobile build",
+    "build:packages": "pnpm --filter \"@gofer/!(web|mobile)\" build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "validate-env": "ts-node scripts/validate-env.ts",

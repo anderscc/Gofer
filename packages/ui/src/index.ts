@@ -6,6 +6,7 @@ export * from './components/TaskCard';
 export * from './components/TaskList';
 export * from './components/TaskMap';
 export * from './components/CreateTaskForm';
+export * from './components/TaskBookingForm';
 
 // Theme
 export * from './theme';
