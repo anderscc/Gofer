@@ -113,6 +113,8 @@ Refer to `ApplicationArchitecture.txt` for full tech stack & design context.
 ### When Responding to Prompts:
 
 * **Always** align output with our architecture in `../ApplicationArchitecture.txt`.
+* **Always** be mindful that the mobile application and folders within `../mobile/` is an EXPO project.
+* **Always** be sure to use components and packages that are compatible with EXPO when developing within the mobile folder or mobile application.
 * Use idiomatic **TypeScript** across stack.
 * Follow feature-first structure (i.e., generate features/modules, not flat files).
 * For new endpoints or features:
