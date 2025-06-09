@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Gofer",
-    "slug": "gofer",
+    "name": "mobile",
+    "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,22 +10,8 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#4F46E5"
+      "backgroundColor": "#ffffff"
     },
-    "plugins": [
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Allow Gofer to use your location to find tasks near you."
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "Allow Gofer to access your photos to upload task images."
-        }
-      ]
-    ],
     "ios": {
       "supportsTablet": true
     },
