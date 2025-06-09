@@ -11,7 +11,9 @@ import HomeScreen from '../features/home/screens/HomeScreen';
 const TasksScreen = () => null;
 const CreateTaskScreen = () => null;
 const MessagesScreen = () => null;
-const ProfileScreen = () => null;
+
+// Import the fully implemented ProfileScreen
+import ProfileScreen from '../features/auth/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
