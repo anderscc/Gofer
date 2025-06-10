@@ -105,6 +105,7 @@ export const authService = {
         username: email,
         password
       });
+      console.log('Sign in result:', signInResult);
       
       // Store auth session if available
       try {
@@ -138,7 +139,7 @@ export const authService = {
         signInDetails: signInResult
       };
     } catch (error) {
-      console.error('Error signing in:', error);
+      console.error('Error signing in v6:', error);
       throw error;
     }
   },

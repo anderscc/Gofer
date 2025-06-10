@@ -1,4 +1,4 @@
-import { Amplify, Auth } from 'aws-amplify';
+import { fetchAuthSession } from '@aws-amplify/auth';
 import { authStorage } from './authStorage';
 
 const TOKEN_REFRESH_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
@@ -14,12 +14,28 @@ export const tokenManager = {
    */
   isTokenExpiredOrExpiringSoon: (token: string): boolean => {
     try {
+      if (!token || token.trim() === '') {
+        return true;
+      }
+      
+      // Check if token has the expected JWT structure
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        console.warn('Invalid token format (not a JWT)');
+        return true;
+      }
+      
       // Decode JWT token (without verification)
-      const base64Url = token.split('.')[1];
+      const base64Url = parts[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join('')
+      );
     
       const { exp } = JSON.parse(jsonPayload);
       
@@ -37,39 +53,28 @@ export const tokenManager = {
   },
 
   /**
-   * Refresh authentication token using refresh token
-   * @returns New auth token and refresh token
+   * Refresh authentication token
+   * @returns New auth token and access token
    */
   refreshToken: async (): Promise<{ authToken: string; refreshToken: string } | null> => {
     try {
-      const currentSession = await Auth.currentSession();
-      const cognitoUser = await Auth.currentAuthenticatedUser();
+      const session = await fetchAuthSession({ forceRefresh: true });
       
-      return new Promise((resolve, reject) => {
-        cognitoUser.refreshSession(
-          currentSession.getRefreshToken(),
-          (err: any, session: any) => {
-            if (err) {
-              console.error('Error refreshing token:', err);
-              reject(err);
-              return;
-            }
-
-            const authToken = session.getIdToken().getJwtToken();
-            const refreshToken = session.getRefreshToken().getToken();
-            
-            // Save the new tokens
-            authStorage.saveTokens(authToken, refreshToken)
-              .then(() => {
-                resolve({ authToken, refreshToken });
-              })
-              .catch(saveErr => {
-                console.error('Error saving refreshed tokens:', saveErr);
-                reject(saveErr);
-              });
-          }
-        );
-      });
+      if (session.tokens) {
+        const idToken = session.tokens.idToken?.toString();
+        const accessToken = session.tokens.accessToken?.toString();
+        
+        if (idToken && accessToken) {
+          // Save the new tokens
+          await authStorage.saveTokens(idToken, accessToken);
+          return { 
+            authToken: idToken, 
+            refreshToken: accessToken 
+          };
+        }
+      }
+      
+      return null;
     } catch (e) {
       console.error('Could not refresh token:', e);
       return null;
@@ -97,15 +102,14 @@ export const tokenManager = {
       }
       
       // If refresh fails, try to get from current session
-      const session = await Auth.currentSession();
-      const sessionToken = session.getIdToken().getJwtToken();
+      const session = await fetchAuthSession();
       
-      if (sessionToken) {
-        await authStorage.saveTokens(
-          sessionToken, 
-          session.getRefreshToken().getToken()
-        );
-        return sessionToken;
+      if (session.tokens?.idToken) {
+        const idToken = session.tokens.idToken.toString();
+        const accessToken = session.tokens.accessToken?.toString() || '';
+        
+        await authStorage.saveTokens(idToken, accessToken);
+        return idToken;
       }
       
       return null;

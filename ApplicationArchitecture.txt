@@ -4,8 +4,10 @@ Frontend
   Mobile: Expo + React Native (TypeScript)
     Easy over-the-air updates (Expo EAS)
     Single codebase for iOS & Android
+    Using EXPO for package management updates
+    Create separate UI components specifically for mobile
   Web: React (TypeScript)
-    Share core UI components via a mono-repo (e.g. pnpm workspaces)
+    Create separate UI components specfically for web
 Backend & Infra
   API: Node.js + TypeScript serverless on AWS
     AWS Lambda behind API Gateway (REST or GraphQL via AppSync)
