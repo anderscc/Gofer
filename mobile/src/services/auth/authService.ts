@@ -2,11 +2,13 @@ import { Amplify } from 'aws-amplify';
 import { 
   signUp, confirmSignUp, resendSignUpCode, signIn, signOut,
   fetchUserAttributes, fetchAuthSession, resetPassword, 
-  confirmResetPassword, updatePassword, getCurrentUser
+  confirmResetPassword, updatePassword, getCurrentUser,
+  signInWithRedirect
 } from '@aws-amplify/auth';
 import '@aws-amplify/react-native'; // Important: Register React Native adapters
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
+import * as Linking from 'expo-linking';
 import { authStorage } from '../../utils/authStorage';
 
 // Amplify configuration for v6
@@ -16,8 +18,15 @@ const awsConfig = {
   Auth: {
     Cognito: {
       region: 'us-east-1', // Replace with your AWS region
-      userPoolId: 'us-east-1_xxxxxxxx', // Replace with your Cognito User Pool ID
-      userPoolClientId: 'xxxxxxxxxxxxxxxxxxxx', // Replace with your App Client ID
+      userPoolId: 'us-east-2_VJu9ay1fn', // Replace with your Cognito User Pool ID
+      userPoolClientId: '3ih6llg6kdoee6rd3u1cune0p3', // Replace with your App Client ID
+      oauth: {
+        domain: 'your-domain.auth.us-east-1.amazoncognito.com', // Replace with your Cognito domain
+        scope: ['email', 'profile', 'openid'],
+        redirectSignIn: 'gofer://callback',
+        redirectSignOut: 'gofer://signout',
+        responseType: 'code',
+      }
     }
   }
 };
@@ -320,5 +329,70 @@ export const authService = {
       console.error('Error disabling biometric login:', error);
       return false;
     }
-  }
+  },
+
+  /**
+   * Initialize Linking listener for handling OAuth redirects
+   */
+  initializeAuthLinking: () => {
+    Linking.addEventListener('url', async ({ url }) => {
+      if (url && url.startsWith('gofer://callback')) {
+        try {
+          // Handle the redirect URL
+          const session = await fetchAuthSession();
+          if (session.tokens) {
+            const idToken = session.tokens.idToken?.toString();
+            // Amplify v6 uses accessToken instead of refreshToken
+            const accessToken = session.tokens.accessToken?.toString();
+            
+            if (idToken && accessToken) {
+              // Save tokens for future use
+              await authStorage.saveTokens(idToken, accessToken);
+              
+              // Get user attributes
+              const userAttributes = await fetchUserAttributes();
+              const user = await getCurrentUser();
+              
+              // Save basic user data
+              await authStorage.saveUserData({
+                username: user.username,
+                attributes: userAttributes || {},
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error handling auth redirect:', error);
+        }
+      }
+    });
+  },
+  
+  /**
+   * Sign in with OAuth using hosted UI
+   * @param provider The identity provider to use (e.g. 'Google', 'Facebook', 'Apple')
+   */
+  signInWithOAuth: async (provider?: string) => {
+    try {
+      // Based on AWS Amplify v6 API
+      await signInWithRedirect({
+        provider: provider as any // Type assertion needed due to API type constraints
+      });
+      return true;
+    } catch (error) {
+      console.error('OAuth sign-in error:', error);
+      throw error;
+    }
+  },
+  
+  /**
+   * Get the initial URL when app is opened from a deep link
+   */
+  getInitialURL: async () => {
+    try {
+      return await Linking.getInitialURL();
+    } catch (error) {
+      console.error('Error getting initial URL:', error);
+      return null;
+    }
+  },
 };

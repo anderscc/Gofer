@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -8,6 +8,7 @@ import {
   KeyboardTypeOptions,
   TextStyle,
   ViewStyle,
+  Platform,
 } from 'react-native';
 import { colors, typography, spacing } from '../../../constants/theme';
 import { Feather } from '@expo/vector-icons';
@@ -20,7 +21,7 @@ interface FormInputProps {
   secureTextEntry?: boolean;
   keyboardType?: KeyboardTypeOptions;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  error?: string;
+  error?: string | null;
   style?: ViewStyle;
   icon?: string;
 }
@@ -37,6 +38,9 @@ export const FormInput: React.FC<FormInputProps> = ({
   style,
   icon,
 }) => {
+  // Toggle for password visibility
+  const [secureTextVisible, setSecureTextVisible] = useState(secureTextEntry);
+  
   return (
     <View style={[styles.inputContainer, style]}>
       <Text style={styles.label}>{label}</Text>
@@ -55,10 +59,26 @@ export const FormInput: React.FC<FormInputProps> = ({
           onChangeText={onChangeText}
           placeholder={placeholder}
           placeholderTextColor={colors.placeholder}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={secureTextVisible}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
+          autoCorrect={false}
+          textContentType={secureTextEntry ? 'oneTimeCode' : 'none'}
+          returnKeyType="done"
+          enablesReturnKeyAutomatically
         />
+        {secureTextEntry && (
+          <TouchableOpacity 
+            style={styles.visibilityIcon}
+            onPress={() => setSecureTextVisible(!secureTextVisible)}
+          >
+            <Feather 
+              name={secureTextVisible ? 'eye' : 'eye-off'} 
+              size={20} 
+              color={colors.textSecondary} 
+            />
+          </TouchableOpacity>
+        )}
       </View>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
@@ -154,6 +174,10 @@ const styles = StyleSheet.create({
   inputIcon: {
     marginLeft: spacing.md,
   },
+  visibilityIcon: {
+    padding: spacing.md,
+    marginRight: spacing.xs,
+  },
   errorText: {
     marginTop: spacing.xs,
     color: colors.error,
@@ -193,5 +217,8 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  visibilityIcon: {
+    padding: spacing.md,
   },
 });

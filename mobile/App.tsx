@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Text } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
+import * as Linking from 'expo-linking';
 import { 
   Inter_400Regular,
   Inter_500Medium,
@@ -13,6 +14,7 @@ import {
 
 import AuthNavigator from './src/navigation/AuthNavigator';
 import AuthProvider from './src/providers/AuthProvider';
+import { authService } from './src/services/auth/authService';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -34,11 +36,21 @@ export default function App() {
           Inter_600SemiBold,
           Inter_700Bold,
         });
+        
+        // Initialize auth linking for OAuth redirects
+        authService.initializeAuthLinking();
+        
+        // Check if app was opened from a deep link
+        const initialUrl = await authService.getInitialURL();
+        if (initialUrl && initialUrl.startsWith('gofer://callback')) {
+          console.log('App opened from OAuth callback');
+          // Auth state will be updated by the linking listener
+        }
 
         // Remove artificial delay 
         // await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (e) {
-        console.warn("Error loading fonts:", e);
+        console.warn("Error loading app:", e);
         setInitError("Failed to load app resources");
       } finally {
         // Tell the application to render

@@ -16,8 +16,8 @@ const awsConfig = {
   Auth: {
     Cognito: {
       region: 'us-east-1', // Replace with your AWS region
-      userPoolId: 'us-east-1_xxxxxxxx', // Replace with your Cognito User Pool ID
-      userPoolClientId: 'xxxxxxxxxxxxxxxxxxxx', // Replace with your App Client ID
+      userPoolId: 'us-east-2_VJu9ay1fn', // Replace with your Cognito User Pool ID
+      userPoolClientId: '3ih6llg6kdoee6rd3u1cune0p3', // Replace with your App Client ID
     }
   }
 };

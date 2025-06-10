@@ -9,6 +9,8 @@ import {
   Platform,
   ScrollView,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
@@ -111,88 +113,92 @@ const SignInScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
         >
-          <View style={styles.header}>
-            <Text style={styles.title}>Sign In</Text>
-            <Text style={styles.subtitle}>Welcome back to Gofer</Text>
-          </View>
-
-          {error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorMessage}>{error}</Text>
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.header}>
+              <Text style={styles.title}>Sign In</Text>
+              <Text style={styles.subtitle}>Welcome back to Gofer</Text>
             </View>
-          )}
 
-          <View style={styles.form}>
-            <FormInput
-              label="Email"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setEmailError(null);
-                setError(null);
-              }}
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              error={emailError}
-              icon="mail"
-            />
-
-            <FormInput
-              label="Password"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                setPasswordError(null);
-                setError(null);
-              }}
-              placeholder="Enter your password"
-              secureTextEntry
-              error={passwordError}
-              icon="lock"
-            />
-
-            <TouchableOpacity
-              style={styles.forgotPassword}
-              onPress={() => navigation.navigate('ForgotPassword' as never)}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-
-            <AuthButton
-              title="Sign In"
-              onPress={handleSignIn}
-              isLoading={isLoading}
-              disabled={isLoading}
-            />
-
-            {isBiometricSupported && isBiometricEnabled && (
-              <TouchableOpacity
-                style={styles.biometricButton}
-                onPress={handleBiometricLogin}
-                disabled={isLoading}
-              >              <Feather name="key" size={24} color={colors.primary} />
-              <Text style={styles.biometricText}>Sign in with biometrics</Text>
-              </TouchableOpacity>
+            {error && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorMessage}>{error}</Text>
+              </View>
             )}
-          </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
-              <Text style={styles.signUpText}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            <View style={styles.form}>
+              <FormInput
+                label="Email"
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  setEmailError(null);
+                  setError(null);
+                }}
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={emailError}
+                icon="mail"
+              />
+
+              <FormInput
+                label="Password"
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setPasswordError(null);
+                  setError(null);
+                }}
+                placeholder="Enter your password"
+                secureTextEntry
+                error={passwordError}
+                icon="lock"
+              />
+
+              <TouchableOpacity
+                style={styles.forgotPassword}
+                onPress={() => navigation.navigate('ForgotPassword' as never)}
+              >
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+
+              <AuthButton
+                title="Sign In"
+                onPress={handleSignIn}
+                isLoading={isLoading}
+                disabled={isLoading}
+              />
+
+              {isBiometricSupported && isBiometricEnabled && (
+                <TouchableOpacity
+                  style={styles.biometricButton}
+                  onPress={handleBiometricLogin}
+                  disabled={isLoading}
+                >              <Feather name="key" size={24} color={colors.primary} />
+                <Text style={styles.biometricText}>Sign in with biometrics</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Don't have an account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
+                <Text style={styles.signUpText}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };

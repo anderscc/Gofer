@@ -8,6 +8,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FormInput, AuthButton } from '../components/AuthComponents';
@@ -106,119 +108,123 @@ const SignUpScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
         >
-          <View style={styles.header}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Sign up to start using Gofer</Text>
-          </View>
-
-          {error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorMessage}>{error}</Text>
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.header}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Sign up to start using Gofer</Text>
             </View>
-          )}
 
-          <View style={styles.form}>
-            <View style={styles.nameRow}>
+            {error && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorMessage}>{error}</Text>
+              </View>
+            )}
+
+            <View style={styles.form}>
+              <View style={styles.nameRow}>
+                <FormInput
+                  label="First Name"
+                  value={firstName}
+                  onChangeText={(text) => {
+                    setFirstName(text);
+                    setFirstNameError(null);
+                    setError(null);
+                  }}
+                  placeholder="Enter first name"
+                  error={firstNameError}
+                  style={styles.nameInput}
+                  icon="user"
+                />
+
+                <FormInput
+                  label="Last Name"
+                  value={lastName}
+                  onChangeText={(text) => {
+                    setLastName(text);
+                    setLastNameError(null);
+                    setError(null);
+                  }}
+                  placeholder="Enter last name"
+                  error={lastNameError}
+                  style={styles.nameInput}
+                  icon="users"
+                />
+              </View>
+
               <FormInput
-                label="First Name"
-                value={firstName}
+                label="Email"
+                value={email}
                 onChangeText={(text) => {
-                  setFirstName(text);
-                  setFirstNameError(null);
+                  setEmail(text);
+                  setEmailError(null);
                   setError(null);
                 }}
-                placeholder="Enter first name"
-                error={firstNameError}
-                style={styles.nameInput}
-                icon="user"
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={emailError}
+                icon="mail"
               />
 
               <FormInput
-                label="Last Name"
-                value={lastName}
+                label="Password"
+                value={password}
                 onChangeText={(text) => {
-                  setLastName(text);
-                  setLastNameError(null);
+                  setPassword(text);
+                  setPasswordError(null);
                   setError(null);
                 }}
-                placeholder="Enter last name"
-                error={lastNameError}
-                style={styles.nameInput}
-                icon="users"
+                placeholder="Create a password"
+                secureTextEntry
+                error={passwordError}
+                icon="lock"
+              />
+
+              <FormInput
+                label="Confirm Password"
+                value={confirmPassword}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  setConfirmPasswordError(null);
+                  setError(null);
+                }}
+                placeholder="Confirm your password"
+                secureTextEntry
+                error={confirmPasswordError}
+                icon="lock"
+              />
+
+              <Text style={styles.passwordHint}>
+                Password must be at least 8 characters
+              </Text>
+
+              <AuthButton
+                title="Sign Up"
+                onPress={handleSignUp}
+                isLoading={isLoading}
+                disabled={isLoading}
               />
             </View>
 
-            <FormInput
-              label="Email"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setEmailError(null);
-                setError(null);
-              }}
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              error={emailError}
-              icon="mail"
-            />
-
-            <FormInput
-              label="Password"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                setPasswordError(null);
-                setError(null);
-              }}
-              placeholder="Create a password"
-              secureTextEntry
-              error={passwordError}
-              icon="lock"
-            />
-
-            <FormInput
-              label="Confirm Password"
-              value={confirmPassword}
-              onChangeText={(text) => {
-                setConfirmPassword(text);
-                setConfirmPasswordError(null);
-                setError(null);
-              }}
-              placeholder="Confirm your password"
-              secureTextEntry
-              error={confirmPasswordError}
-              icon="lock"
-            />
-
-            <Text style={styles.passwordHint}>
-              Password must be at least 8 characters
-            </Text>
-
-            <AuthButton
-              title="Sign Up"
-              onPress={handleSignUp}
-              isLoading={isLoading}
-              disabled={isLoading}
-            />
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignIn' as never)}>
-              <Text style={styles.signInText}>Sign In</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Already have an account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('SignIn' as never)}>
+                <Text style={styles.signInText}>Sign In</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };
