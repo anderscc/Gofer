@@ -1,105 +1,152 @@
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
-import { useAuthStore } from '../services/auth/authStore';
-import { biometricUtils } from '../utils/biometricUtils';
-import LoadingIndicator from '../components/ui/LoadingIndicator';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: any;
-  isLoading: boolean;
-  error: string | null;
-  isBiometricAvailable: boolean;
-  isBiometricEnabled: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  loginWithBiometrics: () => Promise<boolean>;
-  logout: () => Promise<void>;
-  signUp: (email: string, password: string, attributes: Record<string, string>) => Promise<any>;
-  confirmSignUp: (email: string, code: string) => Promise<any>;
-  resetPassword: (email: string) => Promise<any>;
-  confirmResetPassword: (email: string, code: string, newPassword: string) => Promise<any>;
-  toggleBiometricLogin: (enable: boolean, username?: string) => Promise<boolean>;
-  setError: (message: string | null) => void;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+import React, { useState, useEffect, ReactNode } from 'react';
+import { AuthContext, AuthContextType } from './AuthContext';
+import { firebaseAuthService, AuthUser } from '../services/firebaseAuthService';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const authStore = useAuthStore();
-  const {
-    isAuthenticated,
-    user,
-    isLoading,
-    isBiometricAvailable,
-    isBiometricEnabled,
-    checkAuth,
-    login,
-    loginWithBiometrics,
-    logout,
-    signUp,
-    confirmSignUp,
-    resetPassword,
-    confirmResetPassword,
-    toggleBiometricLogin,
-  } = authStore;
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initialize auth state when app loads
-    checkAuth();
-  }, [checkAuth]);
+    // Listen for auth state changes
+    const unsubscribe = firebaseAuthService.onAuthStateChange(async (firebaseUser) => {
+      if (firebaseUser) {
+        // User is authenticated
+        const authUser = firebaseAuthService.getCurrentAuthUser();
+        setUser(authUser);
+      } else {
+        // User is not authenticated
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
 
-  // Check for and prompt biometric login if available and enabled
-  useEffect(() => {
-    const attemptBiometricLogin = async () => {
-      if (!isAuthenticated && !isLoading) {
-        const biometricAvailable = await biometricUtils.isBiometricAvailable();
-        const biometricEnabled = await biometricUtils.isBiometricEnabled();
-        
-        if (biometricAvailable && biometricEnabled) {
-          // Show biometric prompt automatically on app launch
-          loginWithBiometrics();
+    // Check for stored user data on app launch
+    const checkStoredAuth = async () => {
+      try {
+        const currentUser = firebaseAuthService.getCurrentUser();
+        if (currentUser) {
+          const authUser = firebaseAuthService.getCurrentAuthUser();
+          setUser(authUser);
         }
+      } catch (err) {
+        console.error('Error checking stored auth:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    attemptBiometricLogin();
-  }, [isAuthenticated, isLoading, loginWithBiometrics]);
+    checkStoredAuth();
 
-  const value = {
-    isAuthenticated,
+    return unsubscribe;
+  }, []);
+
+  const signUp = async (email: string, password: string, firstName?: string, lastName?: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const authUser = await firebaseAuthService.signUp({
+        email,
+        password,
+        firstName,
+        lastName,
+      });
+      setUser(authUser);
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signIn = async (email: string, password: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const authUser = await firebaseAuthService.signIn(email, password);
+      setUser(authUser);
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signOut = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await firebaseAuthService.signOut();
+      setUser(null);
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetPassword = async (email: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await firebaseAuthService.resetPassword(email);
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resendEmailVerification = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await firebaseAuthService.resendEmailVerification();
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkEmailVerification = async (): Promise<boolean> => {
+    try {
+      return await firebaseAuthService.checkEmailVerification();
+    } catch (err: any) {
+      setError(err.message);
+      return false;
+    }
+  };
+
+  const clearError = (): void => {
+    setError(null);
+  };
+
+  const value: AuthContextType = {
     user,
     isLoading,
-    error: authStore.error,
-    isBiometricAvailable,
-    isBiometricEnabled,
-    login,
-    loginWithBiometrics,
-    logout,
+    error,
     signUp,
-    confirmSignUp,
+    signIn,
+    signOut,
     resetPassword,
-    confirmResetPassword,
-    toggleBiometricLogin,
-    setError: authStore.setError
+    resendEmailVerification,
+    checkEmailVerification,
+    clearError,
   };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
-      <LoadingIndicator visible={isLoading} message="Please wait..." />
     </AuthContext.Provider>
   );
 };
-
-export default AuthProvider;

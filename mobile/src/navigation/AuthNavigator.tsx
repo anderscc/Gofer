@@ -1,50 +1,47 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from '../providers/AuthProvider';
+import { useAuth } from '../providers';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
-// Authentication screens
-import WelcomeScreen from '../features/auth/screens/WelcomeScreen';
-import SignInScreen from '../features/auth/screens/SignInScreen';
-import SignUpScreen from '../features/auth/screens/SignUpScreen';
-import ConfirmSignUpScreen from '../features/auth/screens/ConfirmSignUpScreen';
-import ForgotPasswordScreen from '../features/auth/screens/ForgotPasswordScreen';
-import ResetPasswordScreen from '../features/auth/screens/ResetPasswordScreen';
 
-// Use the existing ProfileScreen component if available, otherwise use our version
-import ProfileScreen from '../features/auth/screens/ProfileScreen';
+// Auth screens
+import { SignInScreen } from '../screens/SignInScreen';
+import { SignUpScreen } from '../screens/SignUpScreen';
+import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
+import { EmailVerificationScreen } from '../screens/EmailVerificationScreen';
 
-// Main app navigation (contains all screens when authenticated)
+// Main app navigation
 import MainNavigator from './MainNavigator';
 
 const Stack = createNativeStackNavigator();
 
+// Firebase Auth Stack
 const AuthStack = () => (
   <Stack.Navigator
-    initialRouteName="Welcome"
+    initialRouteName="SignIn"
     screenOptions={{
       headerShown: false,
-      animation: 'slide_from_right',
     }}
   >
-    <Stack.Screen name="Welcome" component={WelcomeScreen} />
     <Stack.Screen name="SignIn" component={SignInScreen} />
     <Stack.Screen name="SignUp" component={SignUpScreen} />
-    <Stack.Screen name="ConfirmSignUp" component={ConfirmSignUpScreen} />
     <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-    <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+    <Stack.Screen name="EmailVerification" component={EmailVerificationScreen} />
   </Stack.Navigator>
 );
 
 const AuthNavigator = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  // If still loading, we'll render a placeholder navigator to avoid rendering issues
-  // but the actual loading indicator will be shown through the AuthProvider's LoadingIndicator
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
+      {user ? (
         // User is signed in
-        <Stack.Screen name="Main" component={MainNavigator} />
+        <Stack.Screen name="MainTab" component={MainNavigator} />
       ) : (
         // User is not signed in
         <Stack.Screen name="Auth" component={AuthStack} />

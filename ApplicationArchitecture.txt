@@ -11,7 +11,7 @@ Frontend
 Backend & Infra
   API: Node.js + TypeScript serverless on AWS
     AWS Lambda behind API Gateway (REST or GraphQL via AppSync)
-    AWS Cognito for user auth/social-login
+    
   Database:
     Primary: PostgreSQL (Aurora Serverless v2) for relational data (tasks, bookings, reviews)
     Realtime: DynamoDB + DynamoDB streams (or Firebase Realtime DB) to drive in-app chat and presence

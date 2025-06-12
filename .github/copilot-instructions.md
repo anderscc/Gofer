@@ -98,7 +98,7 @@ Refer to `ApplicationArchitecture.txt` for full tech stack & design context.
 
 ## 📦 Libraries & Tools
 
-* **pnpm** for mono-repo workspace
+* **yarn** for mono-repo workspace
 * **Zod** for data validation
 * **Axios** or **Fetch API** for network requests
 * **Stripe SDK** (web/mobile) for payments
@@ -112,7 +112,9 @@ Refer to `ApplicationArchitecture.txt` for full tech stack & design context.
 
 ### When Responding to Prompts:
 
+* **Always** Ensure to NEVER change the location of the package.json file path.
 * **Always** align output with our architecture in `../ApplicationArchitecture.txt`.
+* **Always** Be sure to follow Expo and it's documentation for mobile development best practices and implementation
 * **Always** for all `../mobile/` installations be sure to use expo install or expo compatible installations.
 * **Always** be mindful that the mobile application and folders within `../mobile/` is an EXPO project.
 * **Always** be sure to use components and packages that are compatible with EXPO when developing within the mobile folder or mobile application.

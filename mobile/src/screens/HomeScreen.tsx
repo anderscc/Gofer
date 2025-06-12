@@ -13,19 +13,6 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import SearchBar from '../../../components/ui/SearchBar';
-import Section from '../../../components/ui/Section';
-
-import CategoryCard from '../../../components/ui/cards/CategoryCard';
-import TaskCard from '../../../components/ui/cards/TaskCard';
-import ProviderCard from '../../../components/ui/cards/ProviderCard';
-import Button from '../../../components/ui/buttons/Button';
-import { 
-  serviceCategories,
-  popularTasks,
-  topTaskProviders,
-} from '../../../data/mockData';
-import { colors, spacing, typography, shadows } from '../../../constants/theme';
 
 const HomeScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState('');

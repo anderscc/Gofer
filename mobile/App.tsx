@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Text } from 'react-native';
@@ -11,10 +11,8 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
-
 import AuthNavigator from './src/navigation/AuthNavigator';
-import AuthProvider from './src/providers/AuthProvider';
-import { authService } from './src/services/auth/authService';
+import { AuthProvider } from './src/providers';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -37,18 +35,12 @@ export default function App() {
           Inter_700Bold,
         });
         
-        // Initialize auth linking for OAuth redirects
-        authService.initializeAuthLinking();
-        
-        // Check if app was opened from a deep link
-        const initialUrl = await authService.getInitialURL();
-        if (initialUrl && initialUrl.startsWith('gofer://callback')) {
-          console.log('App opened from OAuth callback');
-          // Auth state will be updated by the linking listener
+        // Make sure Firebase is properly initialized before the app renders
+        try {
+          console.log('Firebase initialized');
+        } catch (authError: any) {
+          console.log("Firebase initialization error:", authError?.message || 'Unknown error');
         }
-
-        // Remove artificial delay 
-        // await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (e) {
         console.warn("Error loading app:", e);
         setInitError("Failed to load app resources");

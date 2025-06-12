@@ -4,16 +4,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 
-// Screens
-import HomeScreen from '../features/home/screens/HomeScreen';
+// Import screens
+import HomeScreen from '../screens/HomeScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { TasksScreen } from '../screens/TasksScreen';
+import { MessagesScreen } from '../screens/MessagesScreen';
+import { CreateTaskScreen } from '../screens/CreateTaskScreen';
 
-// Placeholder Screens
-const TasksScreen = () => null;
-const CreateTaskScreen = () => null;
-const MessagesScreen = () => null;
 
-// Import the fully implemented ProfileScreen
-import ProfileScreen from '../features/auth/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,7 +49,7 @@ const MainNavigator = () => {
         name="Home" 
         component={HomeStack}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Feather name="home" color={color} size={size} />
           ),
         }}
@@ -60,7 +58,7 @@ const MainNavigator = () => {
         name="Tasks" 
         component={TasksScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Feather name="clipboard" color={color} size={size} />
           ),
         }}
@@ -69,7 +67,7 @@ const MainNavigator = () => {
         name="Post" 
         component={CreateTaskScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Feather name="plus-circle" color={color} size={28} />
           ),
         }}
@@ -78,7 +76,7 @@ const MainNavigator = () => {
         name="Messages" 
         component={MessagesScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Feather name="message-square" color={color} size={size} />
           ),
         }}
@@ -87,7 +85,7 @@ const MainNavigator = () => {
         name="Profile" 
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Feather name="user" color={color} size={size} />
           ),
         }}

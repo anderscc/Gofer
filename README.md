@@ -4,19 +4,6 @@ A full-stack task management and booking platform.
 
 ## Project Structure
 
-```
-├── apps/
-│   ├── web/          # Next.js web application
-│   └── mobile/       # React Native mobile application
-├── packages/
-│   ├── api/          # Backend API service
-│   ├── api-client/   # Shared API client library
-│   ├── auth/         # Authentication package
-│   ├── infra/        # Infrastructure as code
-│   ├── search/       # Search service
-│   └── ui/           # Shared UI components
-└── scripts/          # Development and deployment scripts
-```
 
 ## Prerequisites
 
